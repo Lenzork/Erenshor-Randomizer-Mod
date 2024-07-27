@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using MelonLoader;
+using HarmonyLib;
 
 namespace Erenshor_Randomizer_Mod.Core.Classes
 {
@@ -14,12 +15,12 @@ namespace Erenshor_Randomizer_Mod.Core.Classes
 
         public Player(GameObject ply) 
         {
-            this.gObject = ply;
+            gObject = ply;
 
             randomizeNewCharacter();
         }
 
-        private GameObject gObject;
+        private static GameObject gObject;
 
         private void randomizeNewCharacter()
         {
@@ -168,9 +169,7 @@ namespace Erenshor_Randomizer_Mod.Core.Classes
                 if(item.MyItem.ItemName != "Empty")
                 {
                     swapItem(item, itemDB, onlyForMyClass);
-                    Melon<Randomizer>.Logger.Msg("SwapItem triggered");
                 }
-                Melon<Randomizer>.Logger.Msg("SwapItem triggered???");
             }
         }
 
@@ -199,6 +198,30 @@ namespace Erenshor_Randomizer_Mod.Core.Classes
             Melon<Randomizer>.Logger.Msg($"FUNCTION WORKS!");
         }
 
+        private static void swapEquippedItem(ItemIcon newItem, Item[] itemDB)
+        {
+            var oldItemName = newItem.MyItem.ItemName;
+            var plyClass = gObject.GetComponent<Stats>().CharacterClass;
+            var requiredSlot = newItem.MyItem.RequiredSlot;
+
+            // Funktion zum Swappen des Items, das zu Klasse und Slot passt
+            Item GetRandomItem(Item[] items, Class playerClass, Item.SlotType slot)
+            {
+                Item selectedItem;
+                do
+                {
+                    selectedItem = items[rnd.Next(0, items.Length)];
+                } while (!(selectedItem.Classes.Contains(playerClass) && selectedItem.RequiredSlot == slot));
+
+                return selectedItem;
+            }
+
+            // Neues Item auswählen, das von der Klasse tragbar ist und zum Slot passt
+            newItem.MyItem = GetRandomItem(itemDB, plyClass, requiredSlot);
+
+            Melon<Randomizer>.Logger.Msg($"{oldItemName} has been changed into {newItem.MyItem.ItemName}");
+        }
+
         private void randomGold()
         {
             gObject.GetComponent<Inventory>().Gold = rnd.Next(0, 500);
@@ -209,6 +232,30 @@ namespace Erenshor_Randomizer_Mod.Core.Classes
             var randomValue = rnd.Next(-100, 100);
             stat = randomValue;
             Melon<Randomizer>.Logger.Msg($"Randomized {nameof(stat)} to value {randomValue}");
+        }
+
+        [HarmonyPatch(typeof(Stats), "DoLevelUp")]
+        private static class Patch
+        {
+            private static void Postfix()
+            {
+                if (Randomizer.config.GetBool("RandomizePlayerGearOnLevelUp"))
+                {
+                    // Get Inventory
+                    var inventory = gObject.GetComponent<Inventory>();
+
+                    // Get All Items Ingame
+                    var itemDB = GameData.ItemDB.ItemDB;
+
+                    foreach (var item in inventory.EquipmentSlots)
+                    {
+                        if (item.MyItem.ItemName != "Empty")
+                        {
+                            swapEquippedItem(item, itemDB);
+                        }
+                    }
+                }
+            }
         }
     }
 }

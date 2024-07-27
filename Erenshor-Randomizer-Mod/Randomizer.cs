@@ -82,10 +82,12 @@ namespace Erenshor_Randomizer_Mod
             "RandomizeAuras=true",
             "RandomizeSkills=true",
             "RandomizePlayerSpells=true",
+            "RandomizePlayerGearOnLevelUp=true",
             "",
             "# NPC Randomizes",
             "RandomizeNPCLevels=true",
-            "RandomizeNPCSizes=true"
+            "RandomizeNPCSizes=true",
+            "RandomizeNPCLootWindows=true"
         };
 
             // Write the lines to the file
@@ -105,7 +107,6 @@ namespace Erenshor_Randomizer_Mod
             {
                 LoggerInstance.Msg($"{item.Key}={item.Value}");
             }
-            LoggerInstance.Msg("=========================");
         }
     }
 }

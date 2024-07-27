@@ -3,10 +3,12 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.InteropServices.ComTypes;
-using Erenshor_Randomizer_Mod; // The namespace of your mod class
+using Erenshor_Randomizer_Mod;
+using System; // The namespace of your mod class
 
-[assembly: MelonInfo(typeof(Randomizer), "Randomizer", "0.1.0", "Lenzork")]
+[assembly: MelonInfo(typeof(Randomizer), "Randomizer", "0.2.0", "Lenzork")]
 [assembly: MelonGame("Burgee Media", "Erenshor")]
+[assembly: MelonAuthorColor(ConsoleColor.Green)]
 
 // Allgemeine Informationen über eine Assembly werden über die folgenden
 // Attribute gesteuert. Ändern Sie diese Attributwerte, um die Informationen zu ändern,
@@ -38,5 +40,5 @@ using Erenshor_Randomizer_Mod; // The namespace of your mod class
 // Sie können alle Werte angeben oder Standardwerte für die Build- und Revisionsnummern verwenden,
 // indem Sie "*" wie unten gezeigt eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("0.2.0")]
+[assembly: AssemblyFileVersion("0.2.0")]

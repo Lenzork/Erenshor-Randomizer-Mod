@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
 using MelonLoader;
+using HarmonyLib;
 
 namespace Erenshor_Randomizer_Mod.Core.Classes
 {
@@ -48,6 +49,29 @@ namespace Erenshor_Randomizer_Mod.Core.Classes
             }
 
             Melon<Randomizer>.Logger.Msg("Randomized NPC Sizes");
+        }
+
+        [HarmonyPatch(typeof(LootWindow), "LoadWindow")]
+        public static class Patch
+        {
+
+            private static void Postfix(LootWindow __instance)
+            {
+                if (Randomizer.config.GetBool("RandomizeNPCLootWindows"))
+                {
+                    var itemDB = GameData.ItemDB.ItemDB;
+
+                    foreach (var item in __instance.LootSlots)
+                    {
+                        if (item.MyItem.ItemName != "Empty")
+                        {
+                            Melon<Randomizer>.Logger.Msg($"Found item {item.MyItem.ItemName}");
+                            item.MyItem = itemDB[rnd.Next(0, itemDB.Length - 1)];
+                            item.UpdateSlotImage();
+                        }
+                    }
+                }
+            }
         }
     }
 }
